@@ -5,7 +5,17 @@ using UnityEngine;
 public class ControllerAccess : MonoBehaviour {
 
     [SerializeField]
-    private SceneController controller;
+    private SceneController sceneController;
+
+    private GameObject controllerObj; // gameobject that holds all controllers
+    static private string OBJ_TAG = "Controller"; // tag to find controller
+
+    // get the controller object
+    public void GetController()
+    {
+        // find gameobject by tag
+        controllerObj = GameObject.FindWithTag(OBJ_TAG);
+    }
 
     // access function from another controller that
     // will be used in animation event
@@ -14,7 +24,19 @@ public class ControllerAccess : MonoBehaviour {
     public void LoadNextScene()
     {
         // load scene after fade out
-        controller.LoadNextScene();
+        sceneController.LoadNextScene();
+    }
+
+    // note! function seems sketchy, will have to revise this later
+    // access typewriter function
+    public void ShakeFinished()
+    {
+        // get the controller object
+        GetController();
+        // get typewriter class through scene controller class
+        TypeWriter typeWriter = controllerObj.GetComponent<SplashScreenController>().GetTypeWriter();
+        typeWriter.ShakeFinished();
+        
     }
 
     // by sh0

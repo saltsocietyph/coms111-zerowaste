@@ -10,6 +10,7 @@ public class SplashScreenController : SceneController {
     [SerializeField]
     private TypeWriter typeWriter; // typewriter class attached to a gameobject
 
+    // for initialization
 	void Start () {
         tempDelay = delay; // store delay value to tempDelay
 	}
@@ -27,6 +28,12 @@ public class SplashScreenController : SceneController {
             // instead of loading scene here, use animation event
         }
 	}
+
+    // getters and setters
+    public TypeWriter GetTypeWriter()
+    {
+        return typeWriter;
+    }
 
     // by sh0
 }

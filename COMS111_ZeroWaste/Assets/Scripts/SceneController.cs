@@ -11,6 +11,7 @@ public class SceneController : MonoBehaviour {
     public int delay; // delay in loading next scene
     [SerializeField]
     public int sceneToLoad; // build number of scene
+    [Space]
     [SerializeField]
     public Animator fadeAnimator; // animator for fading of scenes
 
@@ -22,7 +23,6 @@ public class SceneController : MonoBehaviour {
     {
         if (sceneToLoad == 0) // no scene to load
             return;
-
         SceneManager.LoadScene(sceneToLoad);
     }
 

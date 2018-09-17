@@ -15,6 +15,7 @@ public class TypeWriter : MonoBehaviour {
     private char[] textDisplayArr; // array of char fr text
     private int index = 0; // used to loop around char array
     private int tempDelay = 0; // variable to -- instead of delay var
+    private bool animFinished = false; // animation state of loho
     public bool typeFinished = false; // typewritter animation state
 
 	void Start () {
@@ -25,6 +26,10 @@ public class TypeWriter : MonoBehaviour {
 	}
 	
 	void Update () {
+        // check if bounce animation is finished
+        if (!animFinished)
+            return;
+
         // displays character per update
         if (index < textDisplayArr.Length)
         {
@@ -43,6 +48,14 @@ public class TypeWriter : MonoBehaviour {
             typeFinished = true; // value taken by a controller to 
                                  // go to next scene
 	}
+
+
+    // ANIMATIONS
+    // sets bounce animation state to finished
+    public void ShakeFinished()
+    {
+        animFinished = true;
+    }
 
     // by sh0
     // notes: made for the dev name on splash screen, but will
