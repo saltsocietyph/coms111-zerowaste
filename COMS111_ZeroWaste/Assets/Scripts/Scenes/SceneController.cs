@@ -17,6 +17,8 @@ public class SceneController : MonoBehaviour {
 
     [HideInInspector] // hidden fields
     public int tempDelay; // temporary storage for delay
+    [HideInInspector]
+    public bool halt; // for skipping actions
 
     // method to use in animation event
     public void LoadNextScene()

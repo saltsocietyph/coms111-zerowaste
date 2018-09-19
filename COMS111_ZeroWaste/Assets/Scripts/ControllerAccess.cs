@@ -23,8 +23,8 @@ public class ControllerAccess : MonoBehaviour {
     // with animator can be used in animation event
     public void LoadNextScene()
     {
-        // load scene after fade out
-        sceneController.LoadNextScene();
+        sceneController.LoadNextScene(); // load scene after fade out
+        Debug.Log("Next Scene: " + sceneController.sceneToLoad); // logs
     }
 
     // note! function seems sketchy, will have to revise this later

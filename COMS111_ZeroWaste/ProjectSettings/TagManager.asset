@@ -17,8 +17,8 @@ TagManager:
   - 
   - Particles
   - PostProcessing
+  - Camera
   - Controllers
-  - 
   - 
   - 
   - 
@@ -45,6 +45,9 @@ TagManager:
     locked: 0
   - name: Background
     uniqueID: 388809709
+    locked: 0
+  - name: Objects
+    uniqueID: 3565048253
     locked: 0
   - name: UI
     uniqueID: 3542809279
