@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 441892927}
   - component: {fileID: 441892929}
   - component: {fileID: 441892928}
-  - component: {fileID: 441892930}
+  - component: {fileID: 441892931}
   m_Layer: 5
   m_Name: DevName
   m_TagString: Untagged
@@ -270,7 +270,7 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 441892926}
   m_CullTransparentMesh: 0
---- !u!114 &441892930
+--- !u!114 &441892931
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -278,15 +278,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 441892926}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d96130ebdcbbee49b83cf6fd2c7f30f, type: 3}
+  m_Script: {fileID: 11500000, guid: 4c15fd30422823e4383c78d798aa5ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textDisplay: {fileID: 441892928}
-  textContent: Salt Society
-  delay: 5
-  delayPerChar: 1
-  animFin: 0
-  typeFinished: 0
+  messageHolder: {fileID: 441892928}
+  messages:
+    messageArray:
+    - Salt Society
+  speed: 0.05
+  delay: 0.5
+--- !u!198 &490308265 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198774216185955564, guid: aecae1ec7c3f70d49abc5b4469f93880,
+    type: 2}
+  m_PrefabInternal: {fileID: 1335554064}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,12 +397,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 348e5b36a3a86a048abd5811f29f8d89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delay: 100
+  delay: 1
   sceneToLoad: 1
-  fadeAnimator: {fileID: 1238381726}
-  tempDelay: 0
-  halt: 0
-  typeWriter: {fileID: 441892930}
+  fadeAnimator: {fileID: 1790716572}
+  fadeOutTrigger: FadeOut
+  isFadeEnabled: 1
+  animationEvents:
+  - {fileID: 1264003676}
+  enableAnimation: 01
+  tempdelay: 0
+  isSceneSkipped: 0
+  messageController: {fileID: 441892931}
 --- !u!224 &754982170
 RectTransform:
   m_ObjectHideFlags: 0
@@ -427,15 +437,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c1820ec84a9fcc4ca0088b9c32c9528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectsOnTouch: {fileID: 910722243}
+  effectsOnTouch: {fileID: 490308265}
   effectsCam: {fileID: 1095870815}
   isTapEnabled: 0
   controller: {fileID: 754982169}
---- !u!198 &910722243 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 198774216185955564, guid: aecae1ec7c3f70d49abc5b4469f93880,
-    type: 2}
-  m_PrefabInternal: {fileID: 1335554064}
 --- !u!1 &945832748
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,11 +758,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 224733895359868924, guid: 33cda56736a94eb4d8f94628e90b28fb,
     type: 2}
   m_PrefabInternal: {fileID: 1922384482}
---- !u!95 &1238381726 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 95816898017104064, guid: 33cda56736a94eb4d8f94628e90b28fb,
-    type: 2}
-  m_PrefabInternal: {fileID: 1922384482}
 --- !u!1 &1264003671
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,10 +855,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1264003671}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a7c5779fb4cd2c42a4dfcbfaae1b01f, type: 3}
+  m_Script: {fileID: 11500000, guid: 2efac2b02fd0696418a6ebd2a1008c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneController: {fileID: 754982169}
+  animator: {fileID: 1264003675}
+  finished: 0
+  playing: 0
+  animationName: Shake
 --- !u!1001 &1335554064
 Prefab:
   m_ObjectHideFlags: 0
@@ -901,6 +904,11 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aecae1ec7c3f70d49abc5b4469f93880, type: 2}
   m_IsPrefabAsset: 0
+--- !u!95 &1790716572 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95816898017104064, guid: 33cda56736a94eb4d8f94628e90b28fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 1922384482}
 --- !u!1 &1869096561
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,11 +1037,6 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 114928563880125528, guid: 33cda56736a94eb4d8f94628e90b28fb,
-        type: 2}
-      propertyPath: sceneController
-      value: 
-      objectReference: {fileID: 754982169}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33cda56736a94eb4d8f94628e90b28fb, type: 2}
   m_IsPrefabAsset: 0

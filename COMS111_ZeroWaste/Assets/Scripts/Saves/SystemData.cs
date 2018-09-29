@@ -10,7 +10,7 @@ public class SystemData { // holds game settings
     private static bool TUTORIAL_FIN = false;
 
     private static SaveData CURRENT_SAVE_DATA = null;
-    private static int MAX_SAVE_FILES = 50;
+    private static int MAX_SAVE_FILES = 30;
 
     private static bool SHOW_MAIN_CAR = false;
     private static int TYPE_SPEED = 2;

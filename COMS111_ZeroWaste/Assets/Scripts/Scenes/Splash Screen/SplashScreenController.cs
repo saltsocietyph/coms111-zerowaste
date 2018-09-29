@@ -1,68 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class SplashScreenController : SceneController {
+public class SplashScreenController : BaseSceneController {
 
     [Space]
     [Header("Unique Values")]
     [SerializeField]
-    private TypeWriter typeWriter; // typewriter class attached to a gameobject
+    private MessageController messageController;
 
-    // strats before start method
-    void Awake()
+    protected override void Update()
     {
-        // application details
-        // for organization, this could be in preload scene
-        Debug.Log(Application.productName + " has started running..."); // logs
-        Debug.Log("Identifier: " + Application.identifier);
-        Debug.Log("Version: " + Application.version);
-        Debug.Log("Game Folder: " + Application.dataPath);
-        
-        Debug.Log("Device Details");
-        Debug.Log("Platform: " + Application.platform);
-        Debug.Log("System Language: " + Application.systemLanguage);
-    }
+        // functions common to all scenes
+        base.Update();
 
-    // for initialization
-	void Start () {
-        halt = false; // for skipping
-        tempDelay = delay; // to retain delay value
-	}
-
-	void Update () {
-        if (halt) Halt(); // check if user skips scene
-
-        // checks if animation is fin
-        if (typeWriter.typeFinished) 
+        // functions unique to this scene
+        // if shake animation is finished
+        if (animationEvents[0].finished)
         {
-            if (tempDelay > 0)
+            // display dev name
+            if (!messageController.getStartedValue())
             {
-                tempDelay--;
-                return;
+                messageController.DisplayMessage(0);
+                messageController.setStartedValue(true);
             }
-
-            Debug.Log("Scene Transition: FadeOut");
-            // if delay is finished, load next scene
-            fadeAnimator.SetTrigger("FadeOut"); // trigger fade out animation
-            // instead of loading scene here, use animation event
+            
+            // load next scene
+            if (messageController.getFinishedValue())
+                StartCoroutine(base.LoadNextScene());
         }
-	}
-
-    // stop all what's happening in the scene
-    public void Halt()
-    {
-        Debug.Log("Tap to Skip is on. Skipping scene..."); // logs
-        tempDelay = 0; // remove delay
-        typeWriter.StopTyping(); // stop typewriter
     }
-
-    // getters and setters
-    public TypeWriter GetTypeWriter()
-    {
-        return typeWriter;
-    }
-
-    // by sh0
 }

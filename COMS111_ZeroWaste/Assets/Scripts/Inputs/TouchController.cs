@@ -14,11 +14,8 @@ public class TouchController : MonoBehaviour {
     [Header("Particle Camera")]
     private Camera effectsCam; // camera that renders particles
     [Space]
-    [Header("Tap Functions")]
     [SerializeField]
-    private bool isTapEnabled; // to check if tap means skip
-    [SerializeField]
-    private SceneController controller; // have control over scene
+    private BaseSceneController controller; // have control over scene
                                         // by touch inputs
     // hidden values
     private Touch touch; // holds touch values
@@ -39,9 +36,7 @@ public class TouchController : MonoBehaviour {
                 case TouchPhase.Began:
                     {
                         TouchEffect(); // call function to play particles
-                        // check if tap means skip
-                        if (isTapEnabled)
-                            controller.halt = true; // stop actions
+                        
                         Debug.Log("Phase: " + touch.phase); // debugging
                         break;
                     }
