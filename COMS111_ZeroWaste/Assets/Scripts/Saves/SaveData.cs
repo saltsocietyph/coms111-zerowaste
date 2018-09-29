@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,6 +29,9 @@ public class SaveData { // holds player progress
     public static int STKITTSNEVIS_NODES_UNLOCKED = 0;
     public static double KUWAIT_COMPLETION = 0;
     public static int KUWAIT_NODES_UNLOCKED = 0;
+
+    public static string LAST_SAVE_DATE = "00/00/0000 00:00:00 AM";
+    public static bool IS_SAVE_EMPTY = true;
 
     // basic player info
     public string firstName = DEF_FIRST_NAME;
@@ -59,4 +63,7 @@ public class SaveData { // holds player progress
     // roster and game items
     // booster, scavenger, materials
 
+    // save details
+    public string lastSaveDate = LAST_SAVE_DATE;
+    public bool isSaveEmpty = IS_SAVE_EMPTY;
 }

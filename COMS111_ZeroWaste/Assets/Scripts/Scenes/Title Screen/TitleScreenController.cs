@@ -14,9 +14,11 @@ public class TitleScreenController : BaseSceneController {
     [SerializeField]
     private Button[] buttons;
     [Space]
-    [Header("Panels")]
+    [Header("Overlay Panels")]
     [SerializeField]
     private GameObject[] panels;
+    [SerializeField]
+    private Animator[] animators;
     [Space]
     [Header("Information")]
     [SerializeField]
@@ -31,6 +33,7 @@ public class TitleScreenController : BaseSceneController {
     private Color active, inactive;
     private SystemData systemData;
     private SaveData currentSave;
+    private SaveData[] savefiles;
 
     protected override void Start()
     {
@@ -38,6 +41,7 @@ public class TitleScreenController : BaseSceneController {
 
         // check current save
         CheckCurrentSave();
+        savefiles = new SaveData[systemData.maxSaveFiles];
 
         // get colors
         active = new Color(buttons[0].image.color.r, buttons[0].image.color.g,
@@ -51,7 +55,21 @@ public class TitleScreenController : BaseSceneController {
         base.Update();
     }
 
-    public void CheckCurrentSave()
+    public FileInfo[] GetSaveFileNames()
+    {
+        // get all save files
+        String persistentDataPath = Application.persistentDataPath + "/";
+        DirectoryInfo directory = new DirectoryInfo(persistentDataPath);
+        FileInfo[] fileNames = directory.GetFiles("*.save");
+
+        Debug.Log("Save Files: ");
+        foreach (FileInfo fileName in fileNames)
+            Debug.Log(fileName.ToString()); // logs
+
+        return fileNames;
+    }
+
+    private void CheckCurrentSave()
     {
         // read system data
         if (File.Exists(Application.persistentDataPath + "/" +
@@ -67,15 +85,11 @@ public class TitleScreenController : BaseSceneController {
             systemData = (SystemData)binaryFormatter.Deserialize(fileStream);
             fileStream.Close();
 
-            // get current save
+            // check if current save is null or not
             if (systemData.currentSave == null)
-            {
                 infos[1].text = "Current Save : None";
-            }
             else
-            {
-                Debug.Log("Function to get file name not yet done.");
-            }
+                infos[1].text = "Current Save : " + systemData.currentSave;
         }
     }
 
@@ -94,7 +108,7 @@ public class TitleScreenController : BaseSceneController {
         {
             case 0:
                 {
-                    NewGame();
+                    NewGame(btnNo);
                     break;
                 }
             case 1:
@@ -116,12 +130,39 @@ public class TitleScreenController : BaseSceneController {
     }
 
     // function called for creating new save
-    public void NewGame()
+    public void NewGame(int btnNo)
     {
-        Debug.Log("New Game button clicked.");
+        Debug.Log("New Game button clicked."); // logs
+
+        // get save file names
+        FileInfo[] fileNames = GetSaveFileNames();
+
+        if (File.Exists(Application.persistentDataPath + "/" +
+            SYSTEM_DATA_FILE_NAME + SYSDATA_EXT))
+        {
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            int index = 0;
+
+            Debug.Log(Application.persistentDataPath);
+            foreach (FileInfo fileName in fileNames)
+            {
+                String name = Path.GetFileName(fileName.ToString());
+                Debug.Log(name);
+
+                FileStream fileStream = File.Open(Application.persistentDataPath +
+                    "/" + name, FileMode.Open);
+                savefiles[index] = (SaveData)binaryFormatter.Deserialize(fileStream);
+
+                index++;
+                Debug.Log(fileStream.Name);
+                fileStream.Close();
+            }
+        }
 
         // show panel
-        panels[0].SetActive(true);
+        panels[btnNo].SetActive(true);
+        if (enableAnimation[btnNo]) // if enabled, show animation
+            animators[btnNo].SetTrigger(animationEvents[btnNo].animationName);
     }
 
     public void Continue()
@@ -132,5 +173,16 @@ public class TitleScreenController : BaseSceneController {
     public void Load()
     {
         Debug.Log("Load Save button clicked.");
+    }
+
+    // getters and setters
+    public SystemData GetSystemData()
+    {
+        return systemData;
+    }
+
+    public SaveData[] GetSaveData()
+    {
+        return savefiles;
     }
 }

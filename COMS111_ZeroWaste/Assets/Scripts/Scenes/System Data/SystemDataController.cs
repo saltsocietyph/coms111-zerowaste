@@ -110,8 +110,21 @@ public class SystemDataController : BaseSceneController {
             {
                 SaveData save = new SaveData();
                 binaryFormatter = new BinaryFormatter(); // convert to binary
-                fileStream = File.Create(Application.persistentDataPath + "/" +
+                if (i < 10)
+                {
+                    fileStream = File.Create(Application.persistentDataPath + "/" +
+                    SAVE_DATA_FILE_NAME + "0" + i + SAVE_EXT);
+                }
+                else
+                {
+                    fileStream = File.Create(Application.persistentDataPath + "/" +
                     SAVE_DATA_FILE_NAME + i + SAVE_EXT);
+                }
+
+                // date save created
+                save.lastSaveDate = DateTime.Now.ToString();
+                Debug.Log(save.lastSaveDate);
+
                 binaryFormatter.Serialize(fileStream, save);
                 fileStream.Close();
             }

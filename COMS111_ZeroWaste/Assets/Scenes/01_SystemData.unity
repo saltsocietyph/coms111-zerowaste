@@ -862,7 +862,7 @@ GameObject:
   - component: {fileID: 2045796992}
   - component: {fileID: 2045796991}
   m_Layer: 5
-  m_Name: Canvas_CheckSaveFile
+  m_Name: Canvas_SystemData
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
