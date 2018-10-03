@@ -147,8 +147,6 @@ public class TitleScreenController : BaseSceneController {
             foreach (FileInfo fileName in fileNames)
             {
                 String name = Path.GetFileName(fileName.ToString());
-                Debug.Log(name);
-
                 FileStream fileStream = File.Open(Application.persistentDataPath +
                     "/" + name, FileMode.Open);
                 savefiles[index] = (SaveData)binaryFormatter.Deserialize(fileStream);
@@ -173,6 +171,11 @@ public class TitleScreenController : BaseSceneController {
     public void Load()
     {
         Debug.Log("Load Save button clicked.");
+    }
+
+    public void ClosePanel(int btnNo)
+    {
+        panels[btnNo].SetActive(false);
     }
 
     // getters and setters
