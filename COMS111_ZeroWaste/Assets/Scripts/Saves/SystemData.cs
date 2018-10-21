@@ -10,6 +10,7 @@ public class SystemData { // holds game settings
     private static bool TUTORIAL_FIN = false;
 
     private static SaveData CURRENT_SAVE_DATA = null;
+    private static String CURRENT_SAVE_NAME = null;
     private static int MAX_SAVE_FILES = 30;
 
     private static bool SHOW_MAIN_CAR = false;
@@ -24,6 +25,7 @@ public class SystemData { // holds game settings
 
     // current save
     public SaveData currentSave = CURRENT_SAVE_DATA;
+    public String currentSaveName = CURRENT_SAVE_NAME;
     public int maxSaveFiles = MAX_SAVE_FILES;
 
     // player settings

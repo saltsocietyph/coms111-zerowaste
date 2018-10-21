@@ -21,79 +21,209 @@ public class SaveRowPopulate : MonoBehaviour {
     [SerializeField]
     private Sprite emptyIcon;
     [Space]
-    [Header("Confirmation Panel")]
+    [Header("Panels")]
     [SerializeField]
     private GameObject confirmation;
+    [SerializeField]
+    private GameObject message;
 
+    private String buttonClicked;
     private int maxNoOfCells;
     private FileInfo[] fileDirectory;
+    private SystemData systemData;
     private SaveData[] saveFiles;
+    private SaveData[] notEmptySaves;
 
     void Start()
     {
-        // initialize
-        maxNoOfCells = sceneController.GetSystemData().maxSaveFiles;
-        Debug.Log(maxNoOfCells);
+        PrepareData();
+        PopulateGrid();
+    }
 
+    public void PrepareData()
+    {
+        // initialize needed values to create a row of save files
+        buttonClicked = sceneController.GetButtonClicked();
+        systemData = sceneController.GetSystemData();
+        maxNoOfCells = systemData.maxSaveFiles;
         fileDirectory = sceneController.GetSaveFileNames();
         saveFiles = sceneController.GetSaveData();
-        
-        PopulateGrid();
+        notEmptySaves = sceneController.GetNotEmptySaveData();
+
+        // turn of message on load panel if there's no
+        // save files that aren't empty
+        if (buttonClicked.Equals("Continue"))
+        {
+            if (notEmptySaves.Length > 0)
+                message.SetActive(false);
+        }
     }
 
     void PopulateGrid()
     {
-        GameObject newCell = new GameObject();
+        // objects need for creating a cell
+        GameObject saveCell;
         TextMeshProUGUI[] texts;
-        Image saveIcon;
+        Image[] images;
 
+        // get number of cells base on button clicked
+        if (buttonClicked.Equals("New Game"))
+        {
+            maxNoOfCells = systemData.maxSaveFiles;
+        }
+
+        if (buttonClicked.Equals("Continue"))
+        {
+            maxNoOfCells = notEmptySaves.Length;
+        }
+            
+        // create cells
         for (int i = 0; i < maxNoOfCells; i++)
         {
             // create a new instance of cell
-            newCell = (GameObject)Instantiate(cell, transform);
+            saveCell = (GameObject)Instantiate(cell, transform);
 
-            SetSaveData(newCell, i);
+            // set the cell's save data
+            SetSaveData(saveCell, i);
 
-            texts = newCell.GetComponentsInChildren<TextMeshProUGUI>();
+            // set the text values
+            texts = saveCell.GetComponentsInChildren<TextMeshProUGUI>();
             SaveFileInfo(texts, i);
 
-            saveIcon = newCell.GetComponentInChildren<Image>();
-            SetSaveIcon(saveIcon, i);
+            // set the images of the cell
+            images = saveCell.GetComponentsInChildren<Image>();
+            SetSaveIcon(images, i);
         }
     }
 
     void SaveFileInfo(TextMeshProUGUI[] texts, int i)
     {
-        String fileName = Path.GetFileNameWithoutExtension(fileDirectory[i].ToString());
+        // loop through all the texts and change
+        // according to save data
         foreach (TextMeshProUGUI text in texts)
         {
+            // set file name
             if (text.name.Equals("FileName"))
-                text.text = fileName;
+            {
+                if (buttonClicked.Equals("New Game"))
+                    text.text = saveFiles[i].fileName;
 
-            Debug.Log(text.name);
+                if (buttonClicked.Equals("Continue"))
+                    text.text = notEmptySaves[i].fileName;
+            }
+                
 
+            // set last save date
             if (text.name.Equals("LastSaveDate"))
-                text.text = saveFiles[i].lastSaveDate;
+            {
+                if (buttonClicked.Equals("New Game"))
+                    text.text = saveFiles[i].lastSaveDate;
 
+                if (buttonClicked.Equals("Continue"))
+                    text.text = notEmptySaves[i].lastSaveDate;
+            }
+                
+            // set player name
             if (text.name.Equals("PlayerName"))
-                text.text = saveFiles[i].firstName + " " + saveFiles[i].lastName;
+            {
+                if (buttonClicked.Equals("New Game"))
+                    text.text = saveFiles[i].firstName + " " + saveFiles[i].lastName;
 
+                if (buttonClicked.Equals("Continue"))
+                    text.text = notEmptySaves[i].firstName + " " + notEmptySaves[i].lastName;
+            }
+
+            // set progress
             if (text.name.Equals("Progress"))
-                text.text = "Progress: " + saveFiles[i].gameCompletion.ToString() + "% Complete";
+            {
+                if (buttonClicked.Equals("New Game"))
+                    text.text = "Progress: " + saveFiles[i].gameCompletion.ToString() + "% Complete";
+
+                if (buttonClicked.Equals("Continue"))
+                    text.text = "Progress: " + notEmptySaves[i].gameCompletion.ToString() + "% Complete";
+            }
+                
         }
     }
 
-    void SetSaveIcon(Image saveIcon, int i)
+    void SetSaveIcon(Image[] images, int i)
     {
-        if (!saveFiles[i].isSaveEmpty)
-            saveIcon.sprite = notEmptyIcon;
+        foreach (Image image in images)
+        {
+            // get the image for save icon
+            if (image.name.Equals("FileImage"))
+            {
+                // if save file is not empty, change icon
+                if (buttonClicked.Equals("New Game"))
+                    if (!saveFiles[i].isSaveEmpty)
+                        image.sprite = notEmptyIcon;
+
+                if (buttonClicked.Equals("Continue"))
+                    if (!notEmptySaves[i].isSaveEmpty)
+                        image.sprite = notEmptyIcon;
+            }
+
+            // set current save badge
+            if (image.name.Equals("BadgeBorder"))
+                SetCurrentSave(image, i);
+        }
+    }
+
+    void SetCurrentSave(Image badge, int i)
+    {
+        // get current save text
+        TextMeshProUGUI text = badge.GetComponentInChildren<TextMeshProUGUI>();
+
+        // hide badge by changing alpha to 0
+        badge.color = new Color(0, 0, 0, 0); // black
+        text.color = new Color(255, 255, 255, 0); // white
+
+        // check if save file is current save
+        if (buttonClicked.Equals("New Game"))
+        {
+            if (systemData.currentSave == null)
+                return;
+
+            if (systemData.currentSaveName.Equals(saveFiles[i].fileName + ".save"))
+            {
+                // change alpha to show badge
+                badge.color = new Color(0, 0, 0, 0.75f);
+                text.color = new Color(255, 255, 255, 255);
+            }
+        }
+
+        if (buttonClicked.Equals("Continue"))
+        {
+            if (systemData.currentSave == null)
+                return;
+
+            if (systemData.currentSaveName.Equals(notEmptySaves[i].fileName + ".save"))
+            {
+                // change alpha to show badge
+                badge.color = new Color(0, 0, 0, 0.75f);
+                text.color = new Color(255, 255, 255, 255);
+            }
+        }
+        
+        
     }
 
     void SetSaveData(GameObject cell, int i)
     {
-        String fileName = Path.GetFileNameWithoutExtension(fileDirectory[i].ToString());
-        cell.GetComponentInChildren<SaveRowClick>().SetFileName(fileName);
-        cell.GetComponentInChildren<SaveRowClick>().SetSaveData(saveFiles[i]);
+        // get the filename with extension
+        String fileName = Path.GetFileName(fileDirectory[i].ToString());
+
+        // pass values to SaveRowClick script
         cell.GetComponentInChildren<SaveRowClick>().SetConfirmationPanel(confirmation);
+        cell.GetComponentInChildren<SaveRowClick>().SetButtonClicked(buttonClicked);
+        cell.GetComponentInChildren<SaveRowClick>().SetFileName(fileName);
+        cell.GetComponentInChildren<SaveRowClick>().SetSystemData(systemData);
+        cell.GetComponentInChildren<SaveRowClick>().SetSceenController(sceneController);
+
+        if (buttonClicked.Equals("New Game"))
+            cell.GetComponentInChildren<SaveRowClick>().SetSaveData(saveFiles[i]);
+
+        if (buttonClicked.Equals("Continue"))
+            cell.GetComponentInChildren<SaveRowClick>().SetSaveData(notEmptySaves[i]);
     }
 }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Controller
   - Effects
+  - CurrentSaveBadge
   layers:
   - Default
   - TransparentFX

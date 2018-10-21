@@ -114,11 +114,19 @@ public class SystemDataController : BaseSceneController {
                 {
                     fileStream = File.Create(Application.persistentDataPath + "/" +
                     SAVE_DATA_FILE_NAME + "0" + i + SAVE_EXT);
+
+                    // file name
+                    save.fileName = SAVE_DATA_FILE_NAME + "0" + i + SAVE_EXT;
+                    save.fileName = Path.GetFileNameWithoutExtension(save.fileName);
                 }
                 else
                 {
                     fileStream = File.Create(Application.persistentDataPath + "/" +
                     SAVE_DATA_FILE_NAME + i + SAVE_EXT);
+
+                    // file name
+                    save.fileName = SAVE_DATA_FILE_NAME + i + SAVE_EXT;
+                    save.fileName = Path.GetFileNameWithoutExtension(save.fileName);
                 }
 
                 // date save created

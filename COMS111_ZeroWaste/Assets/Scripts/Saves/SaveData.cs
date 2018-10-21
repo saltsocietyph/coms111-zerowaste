@@ -30,6 +30,7 @@ public class SaveData { // holds player progress
     public static double KUWAIT_COMPLETION = 0;
     public static int KUWAIT_NODES_UNLOCKED = 0;
 
+    public static string FILE_NAME = "SaveData_.save";
     public static string LAST_SAVE_DATE = "00/00/0000 00:00:00 AM";
     public static bool IS_SAVE_EMPTY = true;
 
@@ -64,6 +65,7 @@ public class SaveData { // holds player progress
     // booster, scavenger, materials
 
     // save details
+    public string fileName = FILE_NAME;
     public string lastSaveDate = LAST_SAVE_DATE;
     public bool isSaveEmpty = IS_SAVE_EMPTY;
 }

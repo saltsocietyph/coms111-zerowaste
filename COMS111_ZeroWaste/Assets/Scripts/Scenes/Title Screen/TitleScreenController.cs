@@ -12,17 +12,17 @@ public class TitleScreenController : BaseSceneController {
     [Space]
     [Header("Button Functions")]
     [SerializeField]
-    private Button[] buttons;
+    private Button[] menuButtons;
     [Space]
     [Header("Overlay Panels")]
     [SerializeField]
-    private GameObject[] panels;
+    private GameObject[] overlayPanels;
     [SerializeField]
     private Animator[] animators;
     [Space]
     [Header("Information")]
     [SerializeField]
-    private TextMeshProUGUI[] infos;
+    private TextMeshProUGUI currentVersion;
     [Space]
     [Header("System Data")]
     [SerializeField]
@@ -30,29 +30,48 @@ public class TitleScreenController : BaseSceneController {
     [SerializeField]
     private string SYSDATA_EXT;
 
+    private String buttonClicked;
     private Color active, inactive;
     private SystemData systemData;
     private SaveData currentSave;
     private SaveData[] savefiles;
+    private SaveData[] notEmptySaves;
 
     protected override void Start()
     {
         base.Start();
 
-        // check current save
-        CheckCurrentSave();
-        savefiles = new SaveData[systemData.maxSaveFiles];
+        // get and deserialize system data
+        DeserializeSystemData();
 
         // get colors
-        active = new Color(buttons[0].image.color.r, buttons[0].image.color.g,
-            buttons[0].image.color.b, buttons[0].image.color.a);
-        inactive = new Color(buttons[0].image.color.r, buttons[0].image.color.g,
-            buttons[0].image.color.b, 0);
+        active = new Color(menuButtons[0].image.color.r, menuButtons[0].image.color.g,
+            menuButtons[0].image.color.b, menuButtons[0].image.color.a);
+        inactive = new Color(menuButtons[0].image.color.r, menuButtons[0].image.color.g,
+            menuButtons[0].image.color.b, 0);
     }
 
     protected override void Update()
     {
         base.Update();
+    }
+
+    public void DeserializeSystemData()
+    {
+        // read system data
+        if (File.Exists(Application.persistentDataPath + "/" +
+            SYSTEM_DATA_FILE_NAME + SYSDATA_EXT))
+        {
+            Debug.Log("Reading system data..."); // logs
+
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            FileStream fileStream = File.Open(Application.persistentDataPath + "/" +
+                SYSTEM_DATA_FILE_NAME + SYSDATA_EXT, FileMode.Open);
+
+            // get system data
+            systemData = (SystemData)binaryFormatter.Deserialize(fileStream);
+            fileStream.Close();
+        }
     }
 
     public FileInfo[] GetSaveFileNames()
@@ -69,56 +88,83 @@ public class TitleScreenController : BaseSceneController {
         return fileNames;
     }
 
-    private void CheckCurrentSave()
+    public void GetSaves(FileInfo[] fileNames)
     {
-        // read system data
         if (File.Exists(Application.persistentDataPath + "/" +
             SYSTEM_DATA_FILE_NAME + SYSDATA_EXT))
         {
-            Debug.Log("Reading system data..."); // logs
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            int index = 0;
+
+            foreach (FileInfo fileName in fileNames)
+            {
+                String name = Path.GetFileName(fileName.ToString());
+                FileStream fileStream = File.Open(Application.persistentDataPath +
+                    "/" + name, FileMode.Open);
+                savefiles[index] = (SaveData)binaryFormatter.Deserialize(fileStream);
+                index++;
+                fileStream.Close();
+            }
+        }
+    }
+
+    public void GetNotEmptySaves(FileInfo[] fileNames)
+    {
+        List<SaveData> notEmptySaves = new List<SaveData>();
+
+        // just to be sure, check if there's a system data
+        if (File.Exists(Application.persistentDataPath + "/" +
+            SYSTEM_DATA_FILE_NAME + SYSDATA_EXT)) {
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
-            FileStream fileStream = File.Open(Application.persistentDataPath + "/" +
-                SYSTEM_DATA_FILE_NAME + SYSDATA_EXT, FileMode.Open);
 
-            // get system data
-            systemData = (SystemData)binaryFormatter.Deserialize(fileStream);
-            fileStream.Close();
+            // loop through all the file directories
+            foreach (FileInfo fileName in fileNames)
+            {
+                String name = Path.GetFileName(fileName.ToString());
+                FileStream fileStream = File.Open(Application.persistentDataPath +
+                    "/" + name, FileMode.Open);
 
-            // check if current save is null or not
-            if (systemData.currentSave == null)
-                infos[1].text = "Current Save : None";
-            else
-                infos[1].text = "Current Save : " + systemData.currentSave;
+                // check if save is not empty
+                SaveData save = (SaveData)binaryFormatter.Deserialize(fileStream);
+                if (!save.isSaveEmpty)
+                {
+                    notEmptySaves.Add(save);
+                    Debug.Log(fileName);
+                }
+                
+                fileStream.Close();
+            }
+
+            // convert list to array
+            this.notEmptySaves = notEmptySaves.ToArray();
         }
     }
 
     public void ButtonClick(int btnNo)
     {
         // loop through buttons and change alphas
-        for (int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < menuButtons.Length; i++)
         {
             if (i.Equals(btnNo))
-                buttons[btnNo].image.color = active; // active
+                menuButtons[btnNo].image.color = active; // active
             else
-                buttons[i].image.color = inactive; // inactive
+                menuButtons[i].image.color = inactive; // inactive
         }
 
+        // function for each button
         switch (btnNo)
         {
             case 0:
                 {
+                    buttonClicked = "New Game";
                     NewGame(btnNo);
                     break;
                 }
             case 1:
                 {
-                    Continue();
-                    break;
-                }
-            case 2:
-                {
-                    Load();
+                    buttonClicked = "Continue";
+                    Continue(btnNo);
                     break;
                 }
             default:
@@ -130,62 +176,71 @@ public class TitleScreenController : BaseSceneController {
     }
 
     // function called for creating new save
-    public void NewGame(int btnNo)
+    public void NewGame(int panelNo)
     {
-        Debug.Log("New Game button clicked."); // logs
+        // instantiate save files array
+        savefiles = new SaveData[systemData.maxSaveFiles];
 
         // get save file names
         FileInfo[] fileNames = GetSaveFileNames();
-
-        if (File.Exists(Application.persistentDataPath + "/" +
-            SYSTEM_DATA_FILE_NAME + SYSDATA_EXT))
-        {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            int index = 0;
-
-            Debug.Log(Application.persistentDataPath);
-            foreach (FileInfo fileName in fileNames)
-            {
-                String name = Path.GetFileName(fileName.ToString());
-                FileStream fileStream = File.Open(Application.persistentDataPath +
-                    "/" + name, FileMode.Open);
-                savefiles[index] = (SaveData)binaryFormatter.Deserialize(fileStream);
-
-                index++;
-                Debug.Log(fileStream.Name);
-                fileStream.Close();
-            }
-        }
+        GetSaves(fileNames);
 
         // show panel
-        panels[btnNo].SetActive(true);
-        if (enableAnimation[btnNo]) // if enabled, show animation
-            animators[btnNo].SetTrigger(animationEvents[btnNo].animationName);
+        // SaveRowPopulate saveGridController = overlayPanels[panelNo].GetComponentInChildren<SaveRowPopulate>();
+        // saveGridController.PrepareData();
+
+        overlayPanels[panelNo].SetActive(true);
+        if (enableAnimation[panelNo]) // if enabled, show animation
+            animators[panelNo].SetTrigger(animationEvents[panelNo].animationName);
     }
 
-    public void Continue()
+    public void Continue(int panelNo)
     {
-        Debug.Log("Continue button clicked.");
+        // get save file names
+        FileInfo[] fileNames = GetSaveFileNames();
+        GetNotEmptySaves(fileNames);
+
+        // show panel
+        // SaveRowPopulate saveGridController = overlayPanels[panelNo].GetComponentInChildren<SaveRowPopulate>();
+        // saveGridController.PrepareData();
+
+        overlayPanels[panelNo].SetActive(true);
+        if (enableAnimation[panelNo]) // if enabled, show animation
+            animators[panelNo].SetTrigger(animationEvents[panelNo].animationName);
     }
 
-    public void Load()
+    public void StartGame()
     {
-        Debug.Log("Load Save button clicked.");
+
     }
 
+    // closes overlay panel
     public void ClosePanel(int btnNo)
     {
-        panels[btnNo].SetActive(false);
+        overlayPanels[btnNo].SetActive(false);
     }
 
     // getters and setters
+    // returns what button is clided
+    public String GetButtonClicked()
+    {
+        return buttonClicked;
+    }
+
+    // returns system data
     public SystemData GetSystemData()
     {
         return systemData;
     }
 
+    // returns save data
     public SaveData[] GetSaveData()
     {
         return savefiles;
+    }
+
+    public SaveData[] GetNotEmptySaveData()
+    {
+        return notEmptySaves;
     }
 }
