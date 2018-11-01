@@ -16,30 +16,30 @@ TagManager:
   - UI
   - 
   - 
+  - Background
+  - Foreground
+  - Player
   - Particles
-  - PostProcessing
+  - OverlayUI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - Camera
-  - Controllers
-  - Overlay
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0
@@ -55,4 +55,7 @@ TagManager:
     locked: 0
   - name: Particles
     uniqueID: 670851727
+    locked: 0
+  - name: OverlayUI
+    uniqueID: 2980005853
     locked: 0
