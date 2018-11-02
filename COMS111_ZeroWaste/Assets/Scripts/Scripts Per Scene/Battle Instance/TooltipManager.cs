@@ -52,7 +52,6 @@ public class TooltipManager : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             {
                 // Animate attack button fill
                 fillImage.fillAmount = pointerDownTime / requiredHoldTime;
-
                 // Show tooltip while user's holding the button
                 ShowTooltip();
             }
@@ -68,7 +67,7 @@ public class TooltipManager : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         }
     }
 
-    private void ShowTooltip()
+    public void ShowTooltip()
     {
         // Prepare tooltip message
         tooltipText.SetText(attackInfo.tooltipMessage);
@@ -88,11 +87,7 @@ public class TooltipManager : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             pointerDownTime = 0;
     }
 
-    public void TestClick()
-    {
-        if (!pointerDown && !(pointerDownTime > 0.1f))
-        {
-            Debug.Log("Im just clicking!");
-        }
+    public void ButtonTest() {
+        Debug.Log("Hello");
     }
 }
