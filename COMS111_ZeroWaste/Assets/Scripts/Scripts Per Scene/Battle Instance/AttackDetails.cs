@@ -1,12 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
+using UnityEngine.UI;
 
-[System.Serializable]
 public class AttackDetails : MonoBehaviour {
 
-    // Basic Details
+    public string attackType;
     public string attackName;
-    public string tooltipMessage;
+
+    public Button attackBtn;
+
+    public void SetAbility()
+    {
+
+    }
 }
